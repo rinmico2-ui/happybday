@@ -137,11 +137,7 @@ class StoryManager {
     this.char.setAnchor('cs-bday');
     this.char.setMood('neutral');
     this.char.setAtmosphere('warm');
-    this.char.enterFrom('left', {
-      onArrive: () => {
-        if (this.currentIndex === 1) this.char.play('wave', { restart: true });
-      }
-    });
+    this.char.enterFrom('left');
   }
 
   _sectionWhy() {
@@ -281,7 +277,7 @@ class StoryManager {
       if (this.revealObserver) this.revealObserver.observe(el);
     });
     this.char.setAnchor(['cs-letter', 'cs-letter2']);
-    this.char.play('wave', { restart: true });
+    this.char.play('idle');
   }
 
   /* ─── REPLAY ─── */

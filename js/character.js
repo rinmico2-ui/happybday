@@ -23,7 +23,6 @@ class CharacterController {
     this.actions = {};
     this.currentAction = null;
     this.currentState = null;
-    this.gestureAction = null;
     this._onFinishCallbacks = [];
 
     this.modelHeight = 1;
@@ -137,13 +136,10 @@ class CharacterController {
         this.mixer = new this.THREE.AnimationMixer(this.model);
         (gltf.animations || []).forEach((clip) => {
           const key = clip.name.toLowerCase();
-          let playableClip = clip;
-          let blendMode = this.THREE.NormalAnimationBlendMode;
+          if (key === 'wave') return;
 
-          if (key === 'wave') {
-            playableClip = clip;
-            blendMode = this.THREE.NormalAnimationBlendMode;
-          }
+          const playableClip = clip;
+          const blendMode = this.THREE.NormalAnimationBlendMode;
 
           this.clips[key] = playableClip;
           const action = this.mixer.clipAction(playableClip, undefined, blendMode);
@@ -171,13 +167,11 @@ class CharacterController {
   play(stateName, opts = {}) {
     if (!this.isReady) return this;
 
-    const name = String(stateName).toLowerCase();
-    if (name === 'wave' && !this.actions.wave) return this.play('idle', { fadeDuration: opts.fadeDuration ?? 0.3 });
-    const action = this.actions[name] || this.actions.idle;
+    const requested = String(stateName).toLowerCase();
+    const name = this.actions[requested] ? requested : 'idle';
+    const action = this.actions[name];
     if (!action) return this;
-    if (name === 'wave') return this._playWave(action, opts);
 
-    this._stopGesture();
     if (this.currentAction === action && action.isRunning() && !opts.restart) return this;
 
     const fadeDuration = opts.fadeDuration ?? 0.38;
@@ -201,42 +195,6 @@ class CharacterController {
     this.currentState = name;
     if (opts.onFinish) this._onFinishCallbacks.push({ action, callback: opts.onFinish });
     return this;
-  }
-
-  _playWave(action, opts) {
-    if (this.currentState === 'walk' || this.currentState === 'run') {
-      this.play('idle', { fadeDuration: 0.25 });
-    }
-    if (this.gestureAction === action && action.isRunning() && !opts.restart) return this;
-
-    if (this.gestureAction) this.gestureAction.stop();
-    action.stop();
-    action.enabled = true;
-    action.setEffectiveWeight(opts.weight ?? 1);
-    action.setEffectiveTimeScale(opts.timeScale ?? this._timeScaleFor('wave'));
-    action.setLoop(this.THREE.LoopOnce, 1);
-    action.clampWhenFinished = false;
-    action.reset().play();
-
-    const baseAction = this.currentAction;
-    if (baseAction && baseAction !== action && baseAction.isRunning()) {
-      action.crossFadeFrom(baseAction, opts.fadeDuration ?? 0.28, true);
-    } else {
-      action.fadeIn(opts.fadeDuration ?? 0.28);
-    }
-
-    this.gestureAction = action;
-    this.currentState = 'wave';
-    if (opts.onFinish) this._onFinishCallbacks.push({ action, callback: opts.onFinish });
-    return this;
-  }
-
-  _stopGesture() {
-    if (!this.gestureAction) return;
-    const gesture = this.gestureAction;
-    gesture.stop();
-    this._onFinishCallbacks = this._onFinishCallbacks.filter((entry) => entry.action !== gesture);
-    this.gestureAction = null;
   }
 
   setAnchor(anchorOrIds) {
@@ -405,9 +363,7 @@ class CharacterController {
     this.motionRoot.position.y += (targetY - this.motionRoot.position.y) * amount;
     this.motionRoot.rotation.z += (targetZ - this.motionRoot.rotation.z) * amount;
 
-    // A raised hand is taller than the model's bind-pose bounds. Ease the
-    // camera back only while waving so the hand never clips at small stages.
-    const cameraDistance = this.modelHeight * (this.gestureAction ? 2.72 : 2.45);
+    const cameraDistance = this.modelHeight * 2.45;
     this.camera.position.z += (cameraDistance - this.camera.position.z) * (1 - Math.exp(-6 * delta));
     this.camera.lookAt(0, this.modelHeight * 0.52, 0);
 
@@ -474,10 +430,6 @@ class CharacterController {
   _onAnimationFinished(action) {
     const callbacks = this._onFinishCallbacks.filter((entry) => entry.action === action);
     this._onFinishCallbacks = this._onFinishCallbacks.filter((entry) => entry.action !== action);
-    if (action._clipName === 'wave' && this.gestureAction === action) {
-      this.gestureAction = null;
-      this.currentState = this.currentAction ? this.currentAction._clipName : 'idle';
-    }
     callbacks.forEach((entry) => entry.callback());
   }
 
@@ -530,7 +482,7 @@ class CharacterController {
 
   _timeScaleFor(name) {
     if (this._reducedMotion) return 0.55;
-    return { idle: 0.88, walk: 0.95, run: 0.9, wave: 0.85 }[name] ?? 1;
+    return { idle: 0.88, walk: 0.95, run: 0.9 }[name] ?? 1;
   }
 
   _dampAngle(current, target, speed, delta) {

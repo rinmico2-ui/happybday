@@ -18,7 +18,7 @@ function injectNames() {
   document.querySelectorAll('[data-name]').forEach((el) => {
     el.textContent = HER_NAME;
   });
-  document.querySelectorAll('[data-yname]').forEach((el) {
+  document.querySelectorAll('[data-yname]').forEach((el) => {
     el.textContent = YOUR_NAME;
   });
 }
@@ -224,10 +224,7 @@ function startStory() {
   if (Character.getIsReady()) {
     Character.playAnimation('Walk', 0.4);
     setTimeout(() => {
-      Character.playAnimation('Wave', 0.3);
-      setTimeout(() => {
-        Character.playAnimation('Idle', 0.5);
-      }, 2500);
+      Character.playAnimation('Idle', 0.5);
     }, 1500);
   }
 }
