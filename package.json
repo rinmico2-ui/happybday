@@ -1,0 +1,7 @@
+{
+  "name": "hindi-sinasadya",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -p 3000"
+  }
+}

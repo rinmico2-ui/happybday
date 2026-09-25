@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d0b1a">
+  <meta name="description" content="A tiny interactive birthday world made for Fhey by Maxwell.">
+  <title>For Fhey &#9825; A Little Birthday Surprise</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body class="opening-intro">
+
+  <!-- ═══ LOADING SCREEN ═══ -->
+  <div id="loading-screen">
+    <div class="loading-text">Preparing something special for Fhey...</div>
+    <div class="loading-sub">A tiny birthday world is getting ready &#10024;</div>
+    <div class="loading-bar-container">
+      <div class="loading-bar-fill" id="loading-bar-fill"></div>
+    </div>
+    <div class="loading-ready" id="loading-ready-text" style="display:none">Ready?</div>
+    <button class="btn btn-glow" id="loading-ready-btn" style="display:none">Begin the surprise &#10024;</button>
+  </div>
+
+  <div class="opening-video-screen" id="opening-video-screen" aria-hidden="true">
+    <video class="opening-video" id="opening-video" autoplay muted playsinline preload="auto" aria-hidden="true">
+      <source src="assets/video/vid.mp4" type="video/mp4">
+    </video>
+    <div class="opening-video-shade" aria-hidden="true"></div>
+    <div class="opening-greeting" id="opening-greeting">
+      <p class="opening-greeting-title">Happy Birthday, Fhey! &#127874;&#10024;</p>
+      <p class="opening-greeting-from">From Maxwell &#9825;</p>
+      <button class="btn btn-glow" id="video-start-btn" type="button">Start the Surprise &#10024;</button>
+    </div>
+    <button class="skip-video" id="skip-video-btn" type="button">Skip intro</button>
+  </div>
+
+  <!-- ═══ THREE.JS CANVAS ═══ -->
+  <canvas id="three-canvas" aria-hidden="true"></canvas>
+
+  <!-- ═══ PARTICLES ═══ -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- ═══ PROGRESS BAR ═══ -->
+  <div class="progress-bar" id="progress-bar"></div>
+
+  <!-- ═══ PROGRESS DOTS ═══ -->
+  <nav class="progress-dots" aria-label="Story progress">
+    <button class="dot active" type="button" title="Intro" aria-label="Go to intro"></button>
+    <button class="dot" type="button" title="Birthday" aria-label="Go to birthday message"></button>
+    <button class="dot" type="button" title="Why" aria-label="Go to why I made this"></button>
+    <button class="dot" type="button" title="Letter" aria-label="Go to letter"></button>
+    <button class="dot" type="button" title="Music video" aria-label="Go to music video"></button>
+    <button class="dot" type="button" title="Memories" aria-label="Go to memories"></button>
+    <button class="dot" type="button" title="Surprise" aria-label="Go to surprise"></button>
+    <button class="dot" type="button" title="Final" aria-label="Go to final message"></button>
+  </nav>
+
+  <!-- ═══ STORY CONTAINER ═══ -->
+  <div class="story-container">
+
+    <!-- ═══ SECTION 1 — INTRO ═══ -->
+    <section id="sec-intro" class="section">
+      <div class="stars-bg" id="stars-intro"></div>
+      <div class="inner" style="display:flex;flex-direction:column;align-items:center;gap:20px">
+        <div class="char-space" id="cs-intro"></div>
+        <div class="intro-txt" id="i-txt">Hey Fhey... &#128075;</div>
+        <div class="intro-sub" id="i-sub">I made something for you.</div>
+        <div class="intro-extra" id="i-extra">But first...</div>
+        <div class="intro-question" id="i-question">Do you know what today is? &#128064;</div>
+        <div class="intro-reveal" id="i-reveal">It's your special day! &#127881;</div>
+        <div class="intro-greeting" id="i-greeting">Happy Birthday, Fhey! &#127874;&#10024;</div>
+        <div class="intro-byline" id="i-byline">A little surprise from Maxwell &#9825;</div>
+        <div class="intro-btn" id="i-btn">
+          <button class="btn btn-glow" id="intro-open-btn" type="button" aria-label="Start the birthday surprise">Start the Surprise &#10024;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION 2 — BIRTHDAY ═══ -->
+    <section id="sec-bday" class="section hidden">
+      <div class="inner">
+        <div class="heading grad-text reveal">Happy Birthday, <span data-name>...</span> &#127874;</div>
+        <p class="body-text italic reveal rd1">Happy birthday to someone who became a little more special to me than I expected.</p>
+        <div class="char-space" id="cs-bday" style="position:relative">
+          <button class="cake-button" id="cake-button" type="button" aria-label="Light the birthday candles" aria-pressed="false">
+            <span class="cake-emoji" aria-hidden="true">&#127874;</span>
+            <span class="candle-flame" aria-hidden="true"></span>
+            <span class="cake-caption" id="cake-caption">tap the cake</span>
+          </button>
+        </div>
+        <p class="cake-message" id="cake-message">When you're ready, make a little wish.</p>
+        <div class="dlg">
+          <div class="bubble reveal">Hi, Fhey! Happy Birthday! &#127874;</div>
+          <div class="bubble reveal rd1">I hope today feels full of small, lovely surprises.</div>
+          <div class="bubble reveal rd2">The kind that find you in the middle of an ordinary day.</div>
+          <div class="bubble reveal rd3">You deserve a whole year of moments worth keeping.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION 3 — WHY I MADE THIS ═══ -->
+    <section id="sec-why" class="section hidden">
+      <div class="moon-decor"></div>
+      <div class="inner">
+        <div class="subheading reveal">I wanted to give you something...</div>
+        <p class="body-text reveal rd1">Something that could cross the distance and stay with you.</p>
+        <div class="char-space" id="cs-why"></div>
+        <div class="dlg">
+          <div class="bubble reveal">Distance can make a moment feel far away...</div>
+          <div class="bubble reveal rd1">So I made a tiny place for us to celebrate together.</div>
+          <div class="bubble reveal rd2">Take your time. There's no rush here.</div>
+        </div>
+        <div style="margin-top:24px">
+          <div class="dlg">
+            <div class="bubble reveal">Okay... this is getting a little cheesy.</div>
+            <div class="bubble reveal rd1">But the good kind, I hope. &#128516;</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION 4 — LETTER ═══ -->
+    <section id="sec-letter" class="section hidden">
+      <div class="inner">
+        <div class="subheading reveal">A little note from my heart to yours.</div>
+        <div class="char-space" id="cs-letter" style="height:140px"></div>
+        <button class="env reveal" id="env-btn" type="button" aria-label="Open Fhey's birthday letter" aria-expanded="false">
+          <span class="heart-icon" aria-hidden="true">&#128140;</span>
+        </button>
+        <p class="body-text reveal rd1" id="env-hint" style="font-size:0.85rem;color:var(--text-light);margin-top:10px">tap to open</p>
+        <dialog class="letter-dialog" id="letter-dialog" aria-labelledby="letter-title">
+          <div class="letter-card" id="lcard">
+            <div class="letter-topline">
+              <span>For my favorite person today</span>
+              <button class="dialog-close" id="letter-close" type="button" aria-label="Close letter">&#10005;</button>
+            </div>
+            <div class="letter-content" id="lcontent">
+              <h2 class="greet" id="letter-title">Dear <span data-name>...</span>,</h2>
+              <p>Happy birthday, Fhey. &#9825;</p>
+              <p>There are so many little things I hope today brings you: a warm welcome, an easy laugh, a good meal, and one moment that makes you feel completely seen.</p>
+              <p>You make conversations feel lighter. You make ordinary days more interesting. And somehow, knowing you has become one of my favorite parts of the week.</p>
+              <p>I'm not trying to rush this into anything perfect. I just wanted you to know that you matter, that being with you feels special, and that I am really glad you are in this story.</p>
+              <p>May this new year be gentle with you. May it give you more reasons to smile, more memories to keep, and plenty of moments that make you feel genuinely happy.</p>
+              <p>Thank you for being you.</p>
+              <p>I hope today is as lovely as you are. &#127799;</p>
+              <p class="sign">With all my heart,<br><span data-yname>...</span></p>
+            </div>
+          </div>
+        </dialog>
+        <div class="dlg" id="lpost" style="display:none">
+          <div class="bubble reveal">Okay...</div>
+          <div class="bubble reveal rd1">That was the honest part.</div>
+          <div class="bubble reveal rd2">I think there's one more surprise waiting for you.</div>
+        </div>
+        <div id="char-letter2-wrap" style="display:none">
+          <div class="char-space" id="cs-letter2" style="height:140px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION 5 — MUSIC VIDEO ═══ -->
+    <section id="sec-song" class="section hidden">
+      <div class="moon-decor-song"></div>
+      <div class="inner">
+        <div class="subheading reveal" style="color:var(--moon-glow)">Until I find the right song...</div>
+        <p class="body-text reveal rd1" style="color:rgba(255,248,224,0.65)">For now, here's a little music video to keep us company.</p>
+        <div class="char-space" id="cs-song"></div>
+        <div class="dlg">
+          <div class="bubble night reveal">Some moments deserve their own soundtrack.</div>
+          <div class="bubble night reveal rd1">This one felt right for the way this little story feels.</div>
+        </div>
+        <div class="music-video-shell reveal rd2">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/GxldQ9eX2wo?rel=0&amp;modestbranding=1"
+            title="Music video for Fhey"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+        </div>
+        <p class="music-video-note reveal rd3">A small soundtrack for a very special day &#9825;</p>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION 7 — MEMORIES ═══ -->
+    <section id="sec-memories" class="section hidden">
+      <div class="inner">
+        <div class="subheading reveal">A Few Things Worth Remembering &#9825;</div>
+        <div class="char-space" id="cs-memories"></div>
+        <p class="body-text reveal rd1">Some memories don't need to be grand to mean a lot.</p>
+        <div class="memory-grid">
+          <article class="memory-card reveal rd1">
+            <span class="memory-number">Memory 01</span>
+            <div class="memory-art memory-art-peach" aria-hidden="true">&#9788;&#65039;</div>
+            <h3>A good kind of unexpected</h3>
+            <p>For the first conversation that made me think, “I hope this keeps going.”</p>
+          </article>
+          <article class="memory-card reveal rd2">
+            <span class="memory-number">Memory 02</span>
+            <div class="memory-art memory-art-lilac" aria-hidden="true">&#10024;</div>
+            <h3>Your little sparks</h3>
+            <p>For the random ideas, soft jokes, and surprising things that make you, you.</p>
+          </article>
+          <article class="memory-card reveal rd3">
+            <span class="memory-number">Memory 03</span>
+            <div class="memory-art memory-art-blue" aria-hidden="true">&#9829;</div>
+            <h3>More memories to make</h3>
+            <p>For whatever beautiful, funny, ordinary chapter comes next. I'm glad you're in it.</p>
+          </article>
+        </div>
+        <p class="memory-note reveal rd4">These are only a few. The best ones are probably still waiting for us.</p>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION 8 — SURPRISE ═══ -->
+    <section id="sec-surprise" class="section hidden">
+      <div class="surprise-glow" aria-hidden="true"></div>
+      <div class="inner">
+        <div class="subheading reveal">Fhey...</div>
+        <p class="body-text reveal rd1">You thought that was everything?</p>
+        <p class="body-text reveal rd2">Nope. &#128528;</p>
+        <div class="char-space" id="cs-surprise"></div>
+        <div class="petal-stage" id="petal-stage" aria-label="Petal letters spelling Happy Birthday Fhey">
+          <div class="petal-words" aria-hidden="true">
+            <div class="petal-script-wrap" style="--delay:0ms; --vine-delay:2400ms">
+              <span class="petal-vine" aria-hidden="true"></span>
+              <svg class="petal-script" viewBox="0 0 300 56" role="presentation">
+                <defs>
+                  <linearGradient id="petalGradientA" x1="0" x2="1">
+                    <stop offset="0" stop-color="#fff0ad" />
+                    <stop offset="0.48" stop-color="#f7bdd4" />
+                    <stop offset="1" stop-color="#b8a0e0" />
+                  </linearGradient>
+                </defs>
+                <text x="150" y="42" text-anchor="middle" stroke="url(#petalGradientA)" font-family="Quicksand, sans-serif" font-size="40" font-weight="700" letter-spacing="3">HAPPY</text>
+              </svg>
+            </div>
+            <div class="petal-script-wrap" style="--delay:1200ms; --vine-delay:4000ms">
+              <span class="petal-vine" aria-hidden="true"></span>
+              <svg class="petal-script" viewBox="0 0 360 56" role="presentation">
+                <defs>
+                  <linearGradient id="petalGradientB" x1="0" x2="1">
+                    <stop offset="0" stop-color="#b8d8f0" />
+                    <stop offset="0.5" stop-color="#d8c8f0" />
+                    <stop offset="1" stop-color="#f7bdd4" />
+                  </linearGradient>
+                </defs>
+                <text x="180" y="42" text-anchor="middle" stroke="url(#petalGradientB)" font-family="Quicksand, sans-serif" font-size="38" font-weight="700" letter-spacing="2">BIRTHDAY</text>
+              </svg>
+            </div>
+            <div class="petal-script-wrap" style="--delay:2400ms; --vine-delay:5600ms">
+              <span class="petal-vine" aria-hidden="true"></span>
+              <svg class="petal-script" viewBox="0 0 240 56" role="presentation">
+                <defs>
+                  <linearGradient id="petalGradientC" x1="0" x2="1">
+                    <stop offset="0" stop-color="#ffe4a4" />
+                    <stop offset="0.52" stop-color="#f3a9c5" />
+                    <stop offset="1" stop-color="#b8a0e0" />
+                  </linearGradient>
+                </defs>
+                <text x="120" y="42" text-anchor="middle" stroke="url(#petalGradientC)" font-family="Quicksand, sans-serif" font-size="40" font-weight="700" letter-spacing="4">FHEY</text>
+              </svg>
+            </div>
+          </div>
+          <span class="petal-spark spark-one"></span>
+          <span class="petal-spark spark-two"></span>
+          <span class="petal-spark spark-three"></span>
+          <span class="petal-spark spark-four"></span>
+        </div>
+        <button class="gift-button" id="gift-button" type="button" aria-label="Open the final birthday surprise">
+          <span class="gift-box" aria-hidden="true">&#127873;</span>
+          <span>Open it &#127873;</span>
+        </button>
+        <div class="surprise-message" id="surprise-message" role="status" aria-live="polite">
+          <strong>You made it to the best part.</strong>
+          <span>May your year be as warm, bright, and wonderful as you are.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION 9 — FINAL ═══ -->
+    <section id="sec-final" class="section hidden">
+      <div class="petals-container" id="petals-container"></div>
+      <div class="inner">
+        <div class="subheading reveal" style="color:var(--moon-glow)">The brightest part of my little world.</div>
+        <div class="char-space" id="cs-final"></div>
+        <p class="body-text reveal" style="color:rgba(255,248,224,0.65)">Some people make a place feel warmer just by being in it.</p>
+        <p class="body-text reveal rd1" style="color:rgba(255,248,224,0.65)">Thank you for being one of those people.</p>
+        <p class="body-text reveal rd2" style="color:rgba(255,248,224,0.65)">I hope this year gives you more reasons to smile, more memories to keep, and plenty of moments that make you genuinely happy.</p>
+        <div class="dlg" style="margin-top:18px">
+          <div class="bubble night reveal">So...</div>
+          <div class="bubble night reveal rd1">Thank you for making this little story feel special.</div>
+          <div class="bubble night reveal rd2">Thank you for letting me get to know you.</div>
+          <div class="bubble night reveal rd3">And thank you for being you. &#128151;</div>
+        </div>
+        <div style="margin-top:28px">
+          <div class="final-msg reveal rd4">HAPPY BIRTHDAY, FHEY! &#127881;&#127874;&#128153;</div>
+        </div>
+        <p class="body-text reveal rd5" style="margin-top:14px;color:rgba(255,248,224,0.55)">From Maxwell &#9825;</p>
+        <p class="body-text reveal" style="color:rgba(255,248,224,0.55)">I hope this little world made you smile. And if it did... mission accomplished. &#10024;</p>
+        <div class="char-space" id="cs-final2" style="height:160px"></div>
+        <div class="dlg" style="margin-top:10px">
+          <div class="bubble night reveal">Happy birthday.</div>
+          <div class="bubble night reveal rd1">Keep being gentle with yourself.</div>
+          <div class="bubble night reveal rd2">I'll be cheering for every good thing this year. &#128536;</div>
+        </div>
+        <div style="margin-top:32px" class="reveal rd3">
+          <button class="btn btn-soft" id="replay-btn" type="button" aria-label="Replay the birthday surprise">Replay the surprise &#8635;</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ═══ SUPPORT SCRIPTS ═══ -->
+  <script src="js/character.js"></script>
+  <script src="js/story.js"></script>
+
+  <!-- ═══ MAIN MODULE (Three.js + Boot) ═══ -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    console.log('Three.js loaded:', THREE.REVISION);
+
+    const CONFIG = {
+      birthdayName: "Fhey",
+      senderName: "Maxwell",
+      modelPath: "assets/models/rigged-model.glb"
+    };
+    const HER_NAME = CONFIG.birthdayName;
+    const YOUR_NAME = CONFIG.senderName;
+    const MODEL_PATH = CONFIG.modelPath;
+    const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Name injection
+    document.querySelectorAll('[data-name]').forEach(el => el.textContent = HER_NAME);
+    document.querySelectorAll('[data-yname]').forEach(el => el.textContent = YOUR_NAME);
+
+    // Instances
+    let char, story;
+
+    // ─── PARTICLES ───
+    const Particles = (() => {
+      let cvs, ctx, particles = [], animFrame;
+      const COUNT = 22;
+      const FIREFLY_COUNT = 12;
+
+      class Pt {
+        constructor(w, h) { this.w = w; this.h = h; this.reset(); }
+        reset() {
+          this.x = Math.random() * this.w;
+          this.y = Math.random() * this.h;
+          this.size = 1 + Math.random() * 2;
+          this.vx = (Math.random() - 0.5) * 0.25;
+          this.vy = -0.15 - Math.random() * 0.25;
+          this.opacity = 0.08 + Math.random() * 0.35;
+          this.type = Math.random() > 0.72 ? 'h' : 's';
+          this.r = Math.random() * 6.28;
+          this.rs = (Math.random() - 0.5) * 0.015;
+        }
+        update() {
+          this.x += this.vx; this.y += this.vy; this.r += this.rs;
+          if (this.y < -10 || this.x < -10 || this.x > this.w + 10) { this.reset(); this.y = this.h + 10; }
+        }
+        draw(ctx) {
+          ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.r); ctx.globalAlpha = this.opacity;
+          if (this.type === 'h') {
+            ctx.fillStyle = '#F8C8D8'; ctx.beginPath();
+            const z = this.size * 1.4;
+            ctx.moveTo(0, z * 0.3); ctx.bezierCurveTo(-z, -z * 0.3, -z, z * 0.6, 0, z);
+            ctx.bezierCurveTo(z, z * 0.6, z, -z * 0.3, 0, z * 0.3); ctx.fill();
+          } else {
+            ctx.fillStyle = '#FFE8A0'; ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+              const a = i * 4 * Math.PI / 5 - Math.PI / 2;
+              i ? ctx.lineTo(Math.cos(a) * this.size, Math.sin(a) * this.size) : ctx.moveTo(Math.cos(a) * this.size, Math.sin(a) * this.size);
+            }
+            ctx.closePath(); ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+
+      class Firefly {
+        constructor(w, h) { this.w = w; this.h = h; this.reset(); }
+        reset() {
+          this.x = Math.random() * this.w;
+          this.y = Math.random() * this.h;
+          this.size = 2 + Math.random() * 2.5;
+          this.vx = (Math.random() - 0.5) * 0.4;
+          this.vy = (Math.random() - 0.5) * 0.3;
+          this.phase = Math.random() * Math.PI * 2;
+          this.phaseSpeed = 0.02 + Math.random() * 0.03;
+          this.baseOpacity = 0.3 + Math.random() * 0.4;
+        }
+        update() {
+          this.phase += this.phaseSpeed;
+          this.x += this.vx + Math.sin(this.phase * 0.7) * 0.15;
+          this.y += this.vy + Math.cos(this.phase * 0.5) * 0.1;
+          if (this.x < -20) this.x = this.w + 10;
+          if (this.x > this.w + 20) this.x = -10;
+          if (this.y < -20) this.y = this.h + 10;
+          if (this.y > this.h + 20) this.y = -10;
+        }
+        draw(ctx) {
+          const glow = this.baseOpacity * (0.5 + 0.5 * Math.sin(this.phase));
+          ctx.save();
+          ctx.globalAlpha = glow * 0.3;
+          ctx.fillStyle = '#C8E870';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = glow;
+          ctx.fillStyle = '#E8FF80';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = '#FFFFF0';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      return {
+        init() {
+          cvs = document.getElementById('particles-canvas');
+          if (!cvs) return;
+          ctx = cvs.getContext('2d');
+          const resize = () => { cvs.width = innerWidth; cvs.height = innerHeight; };
+          resize(); addEventListener('resize', resize);
+          for (let i = 0; i < COUNT; i++) particles.push(new Pt(cvs.width, cvs.height));
+          for (let i = 0; i < FIREFLY_COUNT; i++) particles.push(new Firefly(cvs.width, cvs.height));
+           const loop = () => {
+             ctx.clearRect(0, 0, cvs.width, cvs.height);
+             particles.forEach(p => { p.update(); p.draw(ctx); });
+             if (!REDUCED_MOTION) animFrame = requestAnimationFrame(loop);
+           };
+           loop();
+        }
+      };
+    })();
+
+    // ─── LOADING SCREEN ───
+    const LS = {
+      el: null, barFill: null, readyText: null, readyBtn: null,
+      init() {
+        this.el = document.getElementById('loading-screen');
+        this.barFill = document.getElementById('loading-bar-fill');
+        this.readyText = document.getElementById('loading-ready-text');
+        this.readyBtn = document.getElementById('loading-ready-btn');
+      },
+      setProgress(v) { if (this.barFill) this.barFill.style.width = (Math.min(v, 1) * 100) + '%'; },
+      showReady() {
+        const wrap = this.barFill ? this.barFill.parentElement : null;
+        if (wrap) wrap.style.display = 'none';
+        if (this.readyText) { this.readyText.style.display = 'block'; this.readyText.style.opacity = '0'; this.readyText.style.animation = 'fadeIn 0.6s ease forwards'; }
+        if (this.readyBtn) { this.readyBtn.style.display = 'inline-block'; this.readyBtn.style.opacity = '0'; this.readyBtn.style.animation = 'fadeIn 0.6s ease 0.3s forwards'; }
+      },
+      hide() { if (this.el) { this.el.classList.add('fade-out'); setTimeout(() => { this.el.style.display = 'none'; }, 800); } }
+    };
+
+    // ─── SCROLL PROGRESS ───
+    window.addEventListener('scroll', () => {
+      const bar = document.getElementById('progress-bar');
+      if (!bar) return;
+      const d = document.documentElement.scrollHeight - innerHeight;
+      bar.style.width = (d > 0 ? scrollY / d * 100 : 0) + '%';
+    });
+
+    // ─── STARS ───
+    (() => {
+      const c = document.getElementById('stars-intro');
+      if (!c) return;
+      for (let i = 0; i < 80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const sz = 2 + Math.random() * 3;
+        s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*3}s;animation-delay:${Math.random()*3}s;width:${sz}px;height:${sz}px`;
+        c.appendChild(s);
+      }
+    })();
+
+    // ─── PETALS ───
+    (() => {
+      const c = document.getElementById('petals-container');
+      if (!c) return;
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'petal';
+        const sz = 5 + Math.random() * 7;
+        const hue = 330 + Math.random() * 30;
+        p.style.cssText = `left:${Math.random()*100}%;--dur:${6+Math.random()*7}s;--delay:${Math.random()*5}s;width:${sz}px;height:${sz}px;background:hsl(${hue},65%,78%)`;
+        c.appendChild(p);
+      }
+    })();
+
+    let openingVideoStarted = false;
+    let openingVideoFinished = false;
+    let giftRevealTimers = [];
+
+    function showOpeningGreeting() {
+      if (openingVideoFinished) return;
+      openingVideoFinished = true;
+      const screen = document.getElementById('opening-video-screen');
+      const greeting = document.getElementById('opening-greeting');
+      const skip = document.getElementById('skip-video-btn');
+      if (screen) screen.classList.add('video-finished');
+      if (greeting) greeting.classList.add('visible');
+      if (skip) skip.style.display = 'none';
+    }
+
+    function startOpeningVideo() {
+      if (openingVideoStarted) return;
+      openingVideoStarted = true;
+      const screen = document.getElementById('opening-video-screen');
+      const video = document.getElementById('opening-video');
+      if (!screen || !video) {
+        document.body.classList.remove('opening-intro');
+        return;
+      }
+      video.muted = true;
+      video.currentTime = 0;
+      screen.classList.remove('leaving');
+      screen.classList.add('visible');
+      screen.setAttribute('aria-hidden', 'false');
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(showOpeningGreeting);
+      }
+    }
+
+    function finishOpeningVideo() {
+      const video = document.getElementById('opening-video');
+      if (video) video.pause();
+      showOpeningGreeting();
+    }
+
+    function enterInteractiveExperience() {
+      if (!openingVideoFinished) return;
+      const screen = document.getElementById('opening-video-screen');
+      const video = document.getElementById('opening-video');
+      if (video) video.pause();
+      document.body.classList.remove('opening-intro');
+      if (screen) screen.classList.add('leaving');
+      setTimeout(() => {
+        if (screen) screen.classList.remove('visible');
+        story.startStory();
+      }, REDUCED_MOTION ? 20 : 800);
+    }
+
+    // ─── RENDER LOOP ───
+    function renderLoop() {
+      char.update();
+      requestAnimationFrame(renderLoop);
+    }
+
+    function burstConfetti(amount = 34) {
+      if (REDUCED_MOTION) return;
+      const colors = ['#f8c8d8', '#d8c8f0', '#b8d8f0', '#ffe8a0', '#f8d8c0'];
+      for (let i = 0; i < amount; i += 1) {
+        const piece = document.createElement('span');
+        piece.className = 'confetti-piece';
+        piece.style.left = `${45 + Math.random() * 10}%`;
+        piece.style.top = `${Math.max(20, window.innerHeight * 0.38)}px`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.setProperty('--drift', `${-120 + Math.random() * 240}px`);
+        piece.style.setProperty('--fall-duration', `${2.2 + Math.random() * 1.8}s`);
+        piece.style.animationDelay = `${Math.random() * 0.25}s`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4600);
+      }
+    }
+
+    function burstGiftParticles() {
+      if (REDUCED_MOTION) return;
+      const gift = document.getElementById('gift-button');
+      if (!gift) return;
+      const rect = gift.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height * 0.35;
+      for (let i = 0; i < 30; i += 1) {
+        const spark = document.createElement('span');
+        spark.className = 'gift-spark';
+        spark.style.left = `${originX - 3 + (Math.random() - 0.5) * 34}px`;
+        spark.style.top = `${originY + (Math.random() - 0.5) * 10}px`;
+        spark.style.setProperty('--drift', `${-90 + Math.random() * 180}px`);
+        spark.style.setProperty('--rise-duration', `${1.8 + Math.random() * 1.8}s`);
+        document.body.appendChild(spark);
+        setTimeout(() => spark.remove(), 4200);
+      }
+      for (let i = 0; i < 12; i += 1) {
+        const petal = document.createElement('span');
+        petal.className = 'gift-petal';
+        petal.style.left = `${originX - 6 + (Math.random() - 0.5) * 40}px`;
+        petal.style.top = `${originY + (Math.random() - 0.5) * 14}px`;
+        petal.style.background = ['#f7bdd4', '#d8c8f0', '#b8d8f0', '#ffe4a4'][Math.floor(Math.random() * 4)];
+        petal.style.setProperty('--drift', `${-130 + Math.random() * 260}px`);
+        petal.style.setProperty('--rise-duration', `${2.4 + Math.random() * 2}s`);
+        document.body.appendChild(petal);
+        setTimeout(() => petal.remove(), 5000);
+      }
+    }
+
+    function playCharacter(state) {
+      if (!char || !char.isReady) return;
+      char.play(state, { restart: true });
+    }
+
+    // ─── BOOT ───
+    async function boot() {
+      console.log('boot() starting');
+      LS.init();
+      Particles.init();
+      LS.setProgress(0.1);
+
+      // Create instances
+      char = new CharacterController(THREE, GLTFLoader);
+      char.init(document.getElementById('three-canvas'));
+      console.log('CharacterController initialized');
+
+      story = new StoryManager(char);
+      story.init();
+      console.log('StoryManager initialized');
+
+        try {
+        console.log('Loading GLB model...');
+        await char.loadModel(MODEL_PATH, (p) => { LS.setProgress(0.1 + p * 0.7); });
+        console.log('GLB loaded successfully');
+        LS.setProgress(0.9);
+        renderLoop();
+        LS.setProgress(1.0);
+
+        setTimeout(() => {
+          LS.showReady();
+          LS.hide();
+          startOpeningVideo();
+        }, 300);
+
+        const openingVideo = document.getElementById('opening-video');
+        const videoStartButton = document.getElementById('video-start-btn');
+        const skipVideoButton = document.getElementById('skip-video-btn');
+        if (openingVideo) {
+          openingVideo.addEventListener('ended', showOpeningGreeting);
+          openingVideo.addEventListener('error', showOpeningGreeting);
+        }
+        if (videoStartButton) videoStartButton.addEventListener('click', enterInteractiveExperience);
+        if (skipVideoButton) skipVideoButton.addEventListener('click', finishOpeningVideo);
+
+        document.getElementById('loading-ready-btn').addEventListener('click', () => {
+          startOpeningVideo();
+        });
+
+        document.getElementById('intro-open-btn').addEventListener('click', () => {
+          story.startStory();
+        });
+
+        document.getElementById('env-btn').addEventListener('click', () => {
+          story.openLetter();
+        });
+
+        const letterDialog = document.getElementById('letter-dialog');
+        const letterClose = document.getElementById('letter-close');
+        if (letterClose) letterClose.addEventListener('click', () => story.closeLetter());
+        if (letterDialog) {
+          letterDialog.addEventListener('click', (event) => {
+            if (event.target === letterDialog) story.closeLetter();
+          });
+          letterDialog.addEventListener('cancel', (event) => {
+            event.preventDefault();
+            story.closeLetter();
+          });
+        }
+
+        document.querySelectorAll('.char-space').forEach((space) => {
+          space.addEventListener('click', () => playCharacter('wave'));
+        });
+
+        const cakeButton = document.getElementById('cake-button');
+        const cakeMessage = document.getElementById('cake-message');
+        if (cakeButton && cakeMessage) {
+          cakeButton.addEventListener('click', () => {
+            const lit = cakeButton.classList.toggle('lit');
+            cakeButton.setAttribute('aria-pressed', String(lit));
+            cakeMessage.textContent = lit ? 'Okay, Fhey... make a wish. ✨' : 'I hope your wish comes true. ♡';
+            playCharacter(lit ? 'happy' : 'celebrate');
+            if (lit) burstConfetti(24);
+            else burstConfetti(54);
+          });
+        }
+
+        const giftButton = document.getElementById('gift-button');
+        const surpriseMessage = document.getElementById('surprise-message');
+        const petalStage = document.getElementById('petal-stage');
+        if (giftButton && surpriseMessage) {
+          giftButton.addEventListener('click', () => {
+            if (giftButton.classList.contains('opened') || giftButton.classList.contains('animating')) return;
+            giftRevealTimers.forEach(clearTimeout);
+            giftRevealTimers = [];
+            giftButton.setAttribute('aria-expanded', 'true');
+            if (REDUCED_MOTION) {
+              giftButton.classList.add('opened');
+              if (petalStage) petalStage.classList.add('blooming');
+              surpriseMessage.classList.add('visible');
+              playCharacter('celebrate');
+              return;
+            }
+
+            giftButton.classList.add('animating');
+            giftRevealTimers.push(setTimeout(() => {
+              giftButton.classList.remove('animating');
+              giftButton.classList.add('opened');
+              burstGiftParticles();
+              burstConfetti(36);
+              playCharacter('celebrate');
+            }, 2000));
+            giftRevealTimers.push(setTimeout(() => {
+              if (petalStage) petalStage.classList.add('blooming');
+            }, 3600));
+            giftRevealTimers.push(setTimeout(() => {
+              surpriseMessage.classList.add('visible');
+            }, 8800));
+          });
+        }
+
+        document.getElementById('replay-btn').addEventListener('click', () => {
+          giftRevealTimers.forEach(clearTimeout);
+          giftRevealTimers = [];
+          story.replay();
+        });
+
+        document.querySelectorAll('.progress-dots .dot').forEach((dot, i) => {
+          dot.addEventListener('click', () => {
+            const section = document.getElementById(story.SECTIONS[i]);
+            if (section) section.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
+          });
+        });
+
+      } catch (error) {
+        console.error('Boot failed:', error);
+        document.body.innerHTML = '<pre style="color:red;background:#111;padding:20px;font-size:14px;white-space:pre-wrap">' + error.message + '\n\n' + error.stack + '</pre>';
+      }
+    }
+
+    boot();
+  </script>
+
+</body>
+</html>
